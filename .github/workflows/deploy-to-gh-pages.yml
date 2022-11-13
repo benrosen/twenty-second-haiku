@@ -8,4 +8,4 @@ jobs:
     name: Deploy app
     runs-on: ubuntu-latest
     steps:
-      - run: echo "hello world!"
+      - run: npm run deploy
