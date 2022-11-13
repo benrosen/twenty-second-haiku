@@ -14,6 +14,6 @@ jobs:
           node-version: '14'
       - run: npm ci
       - run: |
-          git config --global user.email "benjamin.p.rosen@gmail.com"
-          git config --global user.name "Ben Rosen"
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
       - run: npm run deploy
