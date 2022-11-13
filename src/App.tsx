@@ -21,7 +21,7 @@ import randomWords from "random-words";
 import { useEffect, useMemo, useState } from "react";
 import { syllable } from "syllable";
 
-export default () => {
+export const App = () => {
   const [dictionary, setDictionary] = useState<string[]>([]);
 
   const [firstLine, setFirstLine] = useState<string>("");
