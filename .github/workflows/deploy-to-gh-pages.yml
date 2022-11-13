@@ -13,4 +13,7 @@ jobs:
         with:
           node-version: '14'
       - run: npm ci
+      - run: |
+          git config --global user.email "benjamin.p.rosen@gmail.com"
+          git config --global user.name "Ben Rosen"
       - run: npm run deploy
