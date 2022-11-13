@@ -13,7 +13,6 @@ jobs:
         with:
           node-version: '14'
       - run: npm ci
-      - run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "<>"
+      - run: git config --global user.name "GitHub Actions Bot"
+      - run: git config --global user.email "<>"
       - run: npm run deploy
