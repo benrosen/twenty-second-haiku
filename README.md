@@ -19,11 +19,12 @@ Note the number of _syllables_ (not words) on each line of the poem.
 
 ## How do you play _Twenty Second Haiku_?
 
-Twenty Second Haiku is a browser-based game. You can [play it here]().
+Twenty Second Haiku is a browser-based game. You can [play it here](https://benrosen.github.io/twenty-second-haiku).
 
 The goal of _Twenty Second Haiku_ is to compose a haiku from random words in twenty seconds.
 
-When you begin a game of _Twenty Second Haiku_, you will be presented with a **collection of random words**, an **empty haiku template**, and a **twenty second timer**.
+When you begin a game of _Twenty Second Haiku_, you will be presented with a **collection of random words**, an **empty
+haiku template**, and a **twenty second timer**.
 
 ### How do you win?
 
