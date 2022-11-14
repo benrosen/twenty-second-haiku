@@ -14,4 +14,4 @@ jobs:
           node-version: '14'
       - run: npm ci
       - run: npm build
-      - run: gh-pages -d build
+      - run: npx gh-pages -d build
