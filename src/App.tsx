@@ -18,10 +18,16 @@ import {
   Typography,
 } from "@mui/material";
 import randomWords from "random-words";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { syllable } from "syllable";
 
 export const App = () => {
+  const playButtonRef = useRef<HTMLButtonElement>(null);
+
+  const refreshButtonRef = useRef<HTMLButtonElement>(null);
+
+  const firstLineRef = useRef<HTMLInputElement>(null);
+
   const [dictionary, setDictionary] = useState<string[]>([]);
 
   const [firstLine, setFirstLine] = useState<string>("");
@@ -54,6 +60,12 @@ export const App = () => {
     return thirdLineSyllables === 5;
   }, [thirdLineSyllables]);
 
+  useEffect(() => {
+    if (dictionary.length > 0) {
+      firstLineRef.current && firstLineRef.current.focus();
+    }
+  }, [dictionary]);
+
   return (
     <Container maxWidth={"sm"}>
       <Stack spacing={5}>
@@ -71,6 +83,7 @@ export const App = () => {
               <Stack direction={"row"} alignItems={"center"} spacing={1}>
                 {dictionary.length > 0 ? (
                   <IconButton
+                    ref={refreshButtonRef}
                     aria-label={"refresh"}
                     onClick={() => {
                       setFirstLine("");
@@ -79,16 +92,17 @@ export const App = () => {
                       setDictionary(randomWords(17));
                     }}
                   >
-                    <Refresh />
+                    <Refresh color={"primary"} />
                   </IconButton>
                 ) : (
                   <IconButton
+                    ref={playButtonRef}
                     aria-label={"play"}
                     onClick={() => {
                       setDictionary(randomWords(17));
                     }}
                   >
-                    <PlayArrow />
+                    <PlayArrow color={"primary"} />
                   </IconButton>
                 )}
                 <Chip icon={<Timer />} label="00:20:000" />
@@ -97,14 +111,14 @@ export const App = () => {
             <Paper variant={"outlined"} sx={{ padding: 2 }}>
               {dictionary.length > 0 ? (
                 <Grid container spacing={2}>
-                  {dictionary.map((word) => {
+                  {dictionary.map((word, index) => {
                     const poem = firstLine + " " + secondLine + " " + thirdLine;
                     const isWordUsed = poem
                       .toLowerCase()
                       .split(" ")
                       .includes(word);
                     return (
-                      <Grid item xs={"auto"}>
+                      <Grid item xs={"auto"} key={index}>
                         <Chip
                           label={word}
                           variant={isWordUsed ? undefined : "outlined"}
@@ -122,6 +136,12 @@ export const App = () => {
             </Paper>
             <Stack spacing={1}>
               <TextField
+                onClick={() => {
+                  dictionary.length < 1 &&
+                    playButtonRef.current &&
+                    playButtonRef.current.focus();
+                }}
+                inputRef={firstLineRef}
                 disabled={dictionary.length < 1}
                 value={firstLine}
                 onChange={(event) => {
@@ -145,6 +165,11 @@ export const App = () => {
                 }}
               ></TextField>
               <TextField
+                onClick={() => {
+                  dictionary.length < 1 &&
+                    playButtonRef.current &&
+                    playButtonRef.current.focus();
+                }}
                 disabled={dictionary.length < 1}
                 value={secondLine}
                 onChange={(event) => {
@@ -168,6 +193,11 @@ export const App = () => {
                 }}
               ></TextField>
               <TextField
+                onClick={() => {
+                  dictionary.length < 1 &&
+                    playButtonRef.current &&
+                    playButtonRef.current.focus();
+                }}
                 disabled={dictionary.length < 1}
                 value={thirdLine}
                 onChange={(event) => {
