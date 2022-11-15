@@ -1,6 +1,6 @@
 import {
   CheckCircle,
-  InfoOutlined,
+  PlayArrow,
   Refresh,
   ReportProblem,
   Timer,
@@ -18,7 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import randomWords from "random-words";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { syllable } from "syllable";
 
 export const App = () => {
@@ -54,10 +54,6 @@ export const App = () => {
     return thirdLineSyllables === 5;
   }, [thirdLineSyllables]);
 
-  useEffect(() => {
-    setDictionary(randomWords(17));
-  }, []);
-
   return (
     <Container maxWidth={"sm"}>
       <Stack spacing={5}>
@@ -70,41 +66,63 @@ export const App = () => {
             >
               <Stack direction={"row"} alignItems={"center"} spacing={1}>
                 <Typography variant={"h6"}>Twenty Second Haiku</Typography>
-                <IconButton aria-label="info">
-                  <InfoOutlined color={"primary"} />
-                </IconButton>
               </Stack>
 
               <Stack direction={"row"} alignItems={"center"} spacing={1}>
-                <IconButton aria-label="refresh">
-                  <Refresh />
-                </IconButton>
-                <Chip icon={<Timer />} label="00:00" color={"error"} />
+                {dictionary.length > 0 ? (
+                  <IconButton
+                    aria-label={"refresh"}
+                    onClick={() => {
+                      setFirstLine("");
+                      setSecondLine("");
+                      setThirdLine("");
+                      setDictionary(randomWords(17));
+                    }}
+                  >
+                    <Refresh />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    aria-label={"play"}
+                    onClick={() => {
+                      setDictionary(randomWords(17));
+                    }}
+                  >
+                    <PlayArrow />
+                  </IconButton>
+                )}
+                <Chip icon={<Timer />} label="00:20:000" />
               </Stack>
             </Stack>
             <Paper variant={"outlined"} sx={{ padding: 2 }}>
-              <Grid container spacing={2}>
-                {dictionary.map((word) => {
-                  const poem = firstLine + " " + secondLine + " " + thirdLine;
-                  const isWordUsed = poem
-                    .toLowerCase()
-                    .split(" ")
-                    .includes(word);
-                  return (
-                    <Grid item xs={"auto"}>
-                      <Chip
-                        label={word}
-                        variant={isWordUsed ? undefined : "outlined"}
-                        color={"success"}
-                      ></Chip>
-                    </Grid>
-                  );
-                })}
-              </Grid>
+              {dictionary.length > 0 ? (
+                <Grid container spacing={2}>
+                  {dictionary.map((word) => {
+                    const poem = firstLine + " " + secondLine + " " + thirdLine;
+                    const isWordUsed = poem
+                      .toLowerCase()
+                      .split(" ")
+                      .includes(word);
+                    return (
+                      <Grid item xs={"auto"}>
+                        <Chip
+                          label={word}
+                          variant={isWordUsed ? undefined : "outlined"}
+                          color={"success"}
+                        ></Chip>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              ) : (
+                <Typography>
+                  Compose a haiku from random words in twenty seconds.
+                </Typography>
+              )}
             </Paper>
             <Stack spacing={1}>
               <TextField
-                autoFocus={true}
+                disabled={dictionary.length < 1}
                 value={firstLine}
                 onChange={(event) => {
                   setFirstLine(event.target.value);
@@ -127,6 +145,7 @@ export const App = () => {
                 }}
               ></TextField>
               <TextField
+                disabled={dictionary.length < 1}
                 value={secondLine}
                 onChange={(event) => {
                   setSecondLine(event.target.value);
@@ -149,6 +168,7 @@ export const App = () => {
                 }}
               ></TextField>
               <TextField
+                disabled={dictionary.length < 1}
                 value={thirdLine}
                 onChange={(event) => {
                   setThirdLine(event.target.value);
@@ -171,29 +191,20 @@ export const App = () => {
                 }}
               ></TextField>
             </Stack>
-            <Stack>
-              <Stack
-                direction={"row"}
-                spacing={1}
-                justifyContent={"space-between"}
-                alignItems={"center"}
-              >
-                <Button
-                  fullWidth={true}
-                  size={"large"}
-                  variant={"contained"}
-                  disabled={
-                    !(
-                      isFirstLineFiveSyllables &&
-                      isSecondLineSevenSyllables &&
-                      isThirdLineFiveSyllables
-                    )
-                  }
-                >
-                  Submit
-                </Button>
-              </Stack>
-            </Stack>
+            <Button
+              fullWidth={true}
+              size={"large"}
+              variant={"contained"}
+              disabled={
+                !(
+                  isFirstLineFiveSyllables &&
+                  isSecondLineSevenSyllables &&
+                  isThirdLineFiveSyllables
+                )
+              }
+            >
+              Submit
+            </Button>
           </Stack>
         </Paper>
       </Stack>
