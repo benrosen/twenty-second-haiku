@@ -22,6 +22,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { syllable } from "syllable";
 
 export const App = () => {
+  const [timerDurationMilliseconds] = useState<number>(20000);
+
+  const [remainingMilliseconds, setRemainingMilliseconds] = useState<number>(
+    timerDurationMilliseconds
+  );
+
+  const [timerInterval] = useState<number>(10);
+
   const playButtonRef = useRef<HTMLButtonElement>(null);
 
   const refreshButtonRef = useRef<HTMLButtonElement>(null);
@@ -66,6 +74,19 @@ export const App = () => {
     }
   }, [dictionary]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dictionary.length > 0 &&
+        setRemainingMilliseconds((remainingMilliseconds) => {
+          return Math.max(0, remainingMilliseconds - timerInterval);
+        });
+    }, timerInterval);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [dictionary.length, timerInterval]);
+
   return (
     <Container maxWidth={"sm"}>
       <Stack spacing={5}>
@@ -90,6 +111,7 @@ export const App = () => {
                       setSecondLine("");
                       setThirdLine("");
                       setDictionary(randomWords(17));
+                      setRemainingMilliseconds(timerDurationMilliseconds);
                     }}
                   >
                     <Refresh color={"primary"} />
@@ -105,7 +127,26 @@ export const App = () => {
                     <PlayArrow color={"primary"} />
                   </IconButton>
                 )}
-                <Chip icon={<Timer />} label="00:20:000" />
+                <Chip
+                  icon={<Timer />}
+                  label={`00:${Math.floor(remainingMilliseconds / 1000)
+                    .toString()
+                    .padStart(2, "0")}:${(remainingMilliseconds % 1000)
+                    .toString()
+                    .padStart(3, "0")}`}
+                  color={
+                    remainingMilliseconds < timerDurationMilliseconds / 4
+                      ? "error"
+                      : remainingMilliseconds < timerDurationMilliseconds / 2
+                      ? "warning"
+                      : "primary"
+                  }
+                  variant={
+                    remainingMilliseconds < timerDurationMilliseconds / 2
+                      ? undefined
+                      : "outlined"
+                  }
+                />
               </Stack>
             </Stack>
             <Paper variant={"outlined"} sx={{ padding: 2 }}>
@@ -137,12 +178,16 @@ export const App = () => {
             <Stack spacing={1}>
               <TextField
                 onClick={() => {
-                  dictionary.length < 1 &&
-                    playButtonRef.current &&
+                  if (dictionary.length < 1 && playButtonRef.current) {
                     playButtonRef.current.focus();
+                  }
+
+                  if (remainingMilliseconds < 1 && refreshButtonRef.current) {
+                    refreshButtonRef.current.focus();
+                  }
                 }}
                 inputRef={firstLineRef}
-                disabled={dictionary.length < 1}
+                disabled={dictionary.length < 1 || remainingMilliseconds < 1}
                 value={firstLine}
                 onChange={(event) => {
                   setFirstLine(event.target.value);
@@ -166,11 +211,15 @@ export const App = () => {
               ></TextField>
               <TextField
                 onClick={() => {
-                  dictionary.length < 1 &&
-                    playButtonRef.current &&
+                  if (dictionary.length < 1 && playButtonRef.current) {
                     playButtonRef.current.focus();
+                  }
+
+                  if (remainingMilliseconds < 1 && refreshButtonRef.current) {
+                    refreshButtonRef.current.focus();
+                  }
                 }}
-                disabled={dictionary.length < 1}
+                disabled={dictionary.length < 1 || remainingMilliseconds < 1}
                 value={secondLine}
                 onChange={(event) => {
                   setSecondLine(event.target.value);
@@ -194,11 +243,15 @@ export const App = () => {
               ></TextField>
               <TextField
                 onClick={() => {
-                  dictionary.length < 1 &&
-                    playButtonRef.current &&
+                  if (dictionary.length < 1 && playButtonRef.current) {
                     playButtonRef.current.focus();
+                  }
+
+                  if (remainingMilliseconds < 1 && refreshButtonRef.current) {
+                    refreshButtonRef.current.focus();
+                  }
                 }}
-                disabled={dictionary.length < 1}
+                disabled={dictionary.length < 1 || remainingMilliseconds < 1}
                 value={thirdLine}
                 onChange={(event) => {
                   setThirdLine(event.target.value);
@@ -227,6 +280,7 @@ export const App = () => {
               variant={"contained"}
               disabled={
                 !(
+                  remainingMilliseconds > 0 &&
                   isFirstLineFiveSyllables &&
                   isSecondLineSevenSyllables &&
                   isThirdLineFiveSyllables
