@@ -24,7 +24,7 @@ jobs:
         env:
           BUTLER_CREDENTIALS: ${{ secrets.ITCH_TOKEN }}
           CHANNEL: browser
-          ITCH_GAME: ${{ steps.package.name }}
+          ITCH_GAME: ${{ steps.package.outputs.name }}
           ITCH_USER: ${{ github.actor }}
           PACKAGE: itch/index.html
-          VERSION: ${{ steps.package.version }}
+          VERSION: ${{ steps.package.outputs.version }}
