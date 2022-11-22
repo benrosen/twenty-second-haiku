@@ -29,6 +29,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { syllable } from "syllable";
 
 export const App = () => {
+  const [timerStartedAt, setTimerStartedAt] = useState<number | null>(null);
+
   const [timeRemainingAtSubmission, setTimeRemainingAtSubmission] = useState<
     number | null
   >(null);
@@ -87,26 +89,42 @@ export const App = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      dictionary.length > 0 &&
-        timeRemainingAtSubmission === null &&
-        setRemainingMilliseconds((remainingMilliseconds) => {
-          return Math.max(0, remainingMilliseconds - timerInterval);
-        });
+      if (timerStartedAt === null) {
+        return;
+      }
+
+      if (timeRemainingAtSubmission !== null) {
+        return;
+      }
+
+      const elapsedTime = Date.now() - timerStartedAt;
+
+      const remainingTime = Math.max(
+        0,
+        timerDurationMilliseconds - elapsedTime
+      );
+
+      setRemainingMilliseconds(remainingTime);
     }, timerInterval);
 
     return () => {
       clearInterval(interval);
     };
-  }, [dictionary.length, timeRemainingAtSubmission, timerInterval]);
+  }, [
+    timeRemainingAtSubmission,
+    timerDurationMilliseconds,
+    timerInterval,
+    timerStartedAt,
+  ]);
 
   const refresh = useCallback(() => {
     setFirstLine("");
     setSecondLine("");
     setThirdLine("");
     setDictionary(randomWords(10));
-    setRemainingMilliseconds(timerDurationMilliseconds);
+    setTimerStartedAt(Date.now());
     setTimeRemainingAtSubmission(null);
-  }, [timerDurationMilliseconds]);
+  }, []);
 
   return (
     <Container maxWidth={"sm"} style={{ padding: "1rem" }}>
@@ -147,13 +165,12 @@ export const App = () => {
               </Fab>
             ) : (
               <Fab
-                autoFocus={true}
                 size={"large"}
                 color={"primary"}
                 ref={playButtonRef}
                 aria-label={"play"}
                 onClick={() => {
-                  setDictionary(randomWords(10));
+                  refresh();
                 }}
               >
                 <PlayArrow />
@@ -352,7 +369,6 @@ export const App = () => {
         )}
         <DialogActions>
           <Button
-            autoFocus
             onClick={() => {
               refresh();
             }}
