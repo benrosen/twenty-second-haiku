@@ -182,10 +182,17 @@ export const App = () => {
               <Grid container spacing={2}>
                 {dictionary.map((word, index) => {
                   const poem = firstLine + " " + secondLine + " " + thirdLine;
-                  const isWordUsed = poem
+
+                  const poemWithoutPunctuation = poem.replace(
+                    /[^\p{L}\p{N}\s]/gu,
+                    ""
+                  );
+
+                  const isWordUsed = poemWithoutPunctuation
                     .toLowerCase()
                     .split(" ")
                     .includes(word);
+
                   return (
                     <Grid item xs={"auto"} key={index}>
                       <Chip
