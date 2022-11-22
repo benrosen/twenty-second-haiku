@@ -366,7 +366,7 @@ export const App = () => {
           </>
         ) : (
           <>
-            <DialogTitle id="alert-dialog-title">You dit it!</DialogTitle>
+            <DialogTitle id="alert-dialog-title">You did it!</DialogTitle>
             <DialogContent>
               <DialogContentText>Congratulations!</DialogContentText>
               <DialogContentText>It's hard to be creative.</DialogContentText>
