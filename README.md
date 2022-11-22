@@ -2,6 +2,8 @@
 
 Compose a haiku from random words in twenty seconds.
 
+[Want to give it a shot?](https://brosen.itch.io/twenty-second-haiku)
+
 ## What is a haiku?
 
 A haiku is a poem with three lines.
@@ -18,8 +20,6 @@ Above is an example of a haiku.
 Note the number of _syllables_ (not words) on each line of the poem.
 
 ## How do you play _Twenty Second Haiku_?
-
-Twenty Second Haiku is a browser-based game. You can [play it here](https://benrosen.github.io/twenty-second-haiku).
 
 The goal of _Twenty Second Haiku_ is to compose a haiku from random words in twenty seconds.
 
