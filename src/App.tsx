@@ -10,6 +10,11 @@ import {
   Button,
   Chip,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Fab,
   Grid,
   IconButton,
@@ -20,10 +25,14 @@ import {
   Typography,
 } from "@mui/material";
 import randomWords from "random-words";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { syllable } from "syllable";
 
 export const App = () => {
+  const [timeRemainingAtSubmission, setTimeRemainingAtSubmission] = useState<
+    number | null
+  >(null);
+
   const [timerDurationMilliseconds] = useState<number>(20000);
 
   const [remainingMilliseconds, setRemainingMilliseconds] = useState<number>(
@@ -79,6 +88,7 @@ export const App = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       dictionary.length > 0 &&
+        timeRemainingAtSubmission === null &&
         setRemainingMilliseconds((remainingMilliseconds) => {
           return Math.max(0, remainingMilliseconds - timerInterval);
         });
@@ -87,7 +97,16 @@ export const App = () => {
     return () => {
       clearInterval(interval);
     };
-  }, [dictionary.length, timerInterval]);
+  }, [dictionary.length, timeRemainingAtSubmission, timerInterval]);
+
+  const refresh = useCallback(() => {
+    setFirstLine("");
+    setSecondLine("");
+    setThirdLine("");
+    setDictionary(randomWords(10));
+    setRemainingMilliseconds(timerDurationMilliseconds);
+    setTimeRemainingAtSubmission(null);
+  }, [timerDurationMilliseconds]);
 
   return (
     <Container maxWidth={"sm"} style={{ padding: "1rem" }}>
@@ -121,17 +140,14 @@ export const App = () => {
                 ref={refreshButtonRef}
                 aria-label={"refresh"}
                 onClick={() => {
-                  setFirstLine("");
-                  setSecondLine("");
-                  setThirdLine("");
-                  setDictionary(randomWords(10));
-                  setRemainingMilliseconds(timerDurationMilliseconds);
+                  refresh();
                 }}
               >
                 <Refresh />
               </Fab>
             ) : (
               <Fab
+                autoFocus={true}
                 size={"large"}
                 color={"primary"}
                 ref={playButtonRef}
@@ -282,6 +298,9 @@ export const App = () => {
                 isThirdLineFiveSyllables
               )
             }
+            onClick={() => {
+              setTimeRemainingAtSubmission(remainingMilliseconds);
+            }}
           >
             Submit
           </Button>
@@ -306,6 +325,42 @@ export const App = () => {
           </Stack>
         </Stack>
       </Paper>
+      <Dialog
+        open={timeRemainingAtSubmission !== null || remainingMilliseconds < 1}
+        aria-labelledby="alert-dialog-title"
+      >
+        {timeRemainingAtSubmission === null ? (
+          <>
+            <DialogTitle id="alert-dialog-title">Out of time</DialogTitle>
+            <DialogContent>
+              <DialogContentText>The game is over.</DialogContentText>
+              <DialogContentText>
+                Next time, submit your haiku
+              </DialogContentText>
+              <DialogContentText>Before time runs out.</DialogContentText>
+            </DialogContent>
+          </>
+        ) : (
+          <>
+            <DialogTitle id="alert-dialog-title">You dit it!</DialogTitle>
+            <DialogContent>
+              <DialogContentText>Congratulations!</DialogContentText>
+              <DialogContentText>It's hard to be creative.</DialogContentText>
+              <DialogContentText>I am proud of you</DialogContentText>
+            </DialogContent>
+          </>
+        )}
+        <DialogActions>
+          <Button
+            autoFocus
+            onClick={() => {
+              refresh();
+            }}
+          >
+            Play again
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
