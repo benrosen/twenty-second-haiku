@@ -29,6 +29,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { syllable } from "syllable";
 
 export const App = () => {
+  const [wasDialogDismissed, setWasDialogDismissed] = useState<boolean>(false);
+
   const [timerStartedAt, setTimerStartedAt] = useState<number | null>(null);
 
   const [timeRemainingAtSubmission, setTimeRemainingAtSubmission] = useState<
@@ -124,6 +126,7 @@ export const App = () => {
     setDictionary(randomWords(10));
     setTimerStartedAt(Date.now());
     setTimeRemainingAtSubmission(null);
+    setWasDialogDismissed(false);
   }, []);
 
   return (
@@ -223,7 +226,11 @@ export const App = () => {
                 }
               }}
               inputRef={firstLineRef}
-              disabled={dictionary.length < 1 || remainingMilliseconds < 1}
+              disabled={
+                dictionary.length < 1 ||
+                remainingMilliseconds < 1 ||
+                timeRemainingAtSubmission !== null
+              }
               value={firstLine}
               onChange={(event) => {
                 setFirstLine(event.target.value);
@@ -255,7 +262,11 @@ export const App = () => {
                   refreshButtonRef.current.focus();
                 }
               }}
-              disabled={dictionary.length < 1 || remainingMilliseconds < 1}
+              disabled={
+                dictionary.length < 1 ||
+                remainingMilliseconds < 1 ||
+                timeRemainingAtSubmission !== null
+              }
               value={secondLine}
               onChange={(event) => {
                 setSecondLine(event.target.value);
@@ -287,7 +298,11 @@ export const App = () => {
                   refreshButtonRef.current.focus();
                 }
               }}
-              disabled={dictionary.length < 1 || remainingMilliseconds < 1}
+              disabled={
+                dictionary.length < 1 ||
+                remainingMilliseconds < 1 ||
+                timeRemainingAtSubmission !== null
+              }
               value={thirdLine}
               onChange={(event) => {
                 setThirdLine(event.target.value);
@@ -316,6 +331,7 @@ export const App = () => {
             variant={"contained"}
             disabled={
               !(
+                timeRemainingAtSubmission === null &&
                 remainingMilliseconds > 0 &&
                 isFirstLineFiveSyllables &&
                 isSecondLineSevenSyllables &&
@@ -350,7 +366,10 @@ export const App = () => {
         </Stack>
       </Paper>
       <Dialog
-        open={timeRemainingAtSubmission !== null || remainingMilliseconds < 1}
+        open={
+          !wasDialogDismissed &&
+          (timeRemainingAtSubmission !== null || remainingMilliseconds < 1)
+        }
         aria-labelledby="alert-dialog-title"
       >
         {timeRemainingAtSubmission === null ? (
@@ -375,6 +394,13 @@ export const App = () => {
           </>
         )}
         <DialogActions>
+          <Button
+            onClick={() => {
+              setWasDialogDismissed(true);
+            }}
+          >
+            Dismiss
+          </Button>
           <Button
             onClick={() => {
               refresh();
